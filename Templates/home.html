@@ -1,0 +1,186 @@
+{% load static %} <!-- Charge le tag static -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Art Gallery</title>
+    <link href="{% static 'src/output.css' %}" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <style>
+        /* Curseur d'animation */
+        .cursor {
+            display: inline-block;
+            width: 10px;
+            background-color: white;
+            animation: blink 0.7s infinite;
+            vertical-align: bottom;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        /* Animation de texte */
+        .hidden {
+            opacity: 0;
+        }
+
+        .visible {
+            opacity: 1;
+            transition: opacity 0.3s ease;
+        }
+
+        /* Footer styling */
+        footer {
+            background-color: #1a202c;
+            color: white;
+            text-align: center;
+            padding: 20px 0;
+            position: relative;
+            z-index: 10;
+            margin-top: auto;
+        }
+
+        .footer-text {
+            font-size: 1.5rem;
+            opacity: 0;
+        }
+
+        .social-icons {
+            margin-top: 10px;
+        }
+
+        .social-icons a {
+            margin: 0 10px;
+            color: white;
+            text-decoration: none;
+            font-size: 1.5rem;
+            transition: color 0.3s;
+        }
+
+        .social-icons a:hover {
+            color: #3182ce; /* Blue hover color */
+        }
+
+        /* Animation for footer text */
+        @keyframes fadeIn {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+
+        .animate-footer {
+            animation: fadeIn 2s ease forwards;
+        }
+    </style>
+</head>
+<body>
+   
+   <!-- templates/home.html -->
+{% include 'navbar.html' %}
+
+<section class="bg-cover bg-center min-h-screen flex items-center justify-center"
+         style="background-image: url('{% static "images/background.jpg" %}');">
+    <div class="container mx-auto px-4  text-center">
+        <h1 id="title" class="text-5xl font-bold mb-6 text-black"></h1>
+        <p id="description" class="text-lg mb-8 text-gray-300"></p>
+        <a href="" class="bg-blue-500 hover:bg-blue-700 text-black font-bold py-2 px-4 rounded">Generate Your Art</a>
+    </div>
+</section>
+
+<section class="bg-white py-12">
+    <div class="container mx-auto px-4 text-center">
+        <h2 class="text-3xl font-bold mb-6">Recent Creations</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+            <!-- Example artworks (to be generated dynamically) -->
+            <div class="bg-gray-200 rounded shadow-lg">
+                <img src="{% static 'images/ai.png' %}" alt="Artwork 1" class="w-full h-64 object-cover rounded-t">                <div class="p-4">
+                    <h3 class="text-2xl font-semibold">Abstract Dream #1</h3>
+                    <h1 class="text-gray-700">Generated using GANs</h1>
+                </div>
+            </div>
+            <div class="bg-gray-200 rounded shadow-lg">
+                <img src="{% static 'images/images.jpg' %}" alt="Artwork 2" class="w-full h-64 object-cover rounded-t">
+                <div class="p-4">
+                    <h3 class="text-xl font-semibold">Surreal Landscape #2</h3>
+                    <p class="text-gray-700">Generated using GANs</p>
+                </div>
+            </div>
+            <div class="bg-gray-200 rounded shadow-lg">
+                <img src="{% static 'images/AI2.jpg' %}" alt="Artwork 3" class="w-full h-64 object-cover rounded-t">
+                <div class="p-4">
+                    <h3 class="text-xl font-semibold">AI Vision #3</h3>
+                    <p class="text-gray-700">Generated using GANs</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<footer>
+    <div class="footer-content">
+        <p id="footer-text" class="footer-text">AI Project © 2024 - Powered by Creativity and Technology</p>
+        <div class="social-icons">
+            <a href="#"><i class="fab fa-twitter"></i></a>
+            <a href="#"><i class="fab fa-facebook-f"></i></a>
+            <a href="#"><i class="fab fa-instagram"></i></a>
+        </div>
+    </div>
+</footer>
+
+
+<script>
+    // Texte à afficher pour le titre et la description
+    const titleText = "Explore the World of AI-Generated Art";
+    const descriptionText = "Create stunning abstract art powered by cutting-edge GAN models.";
+    const footerText = "AI Project © 2024 - Powered by Creativity and Technology";
+
+    // Fonction pour animer l'affichage des lettres
+    function typeText(element, text, delay) {
+        let index = 0;
+        const cursor = document.createElement('span');
+        cursor.className = 'cursor';
+        element.appendChild(cursor); // Ajoute le curseur à la fin du texte
+
+        function typeLetter() {
+            if (index < text.length) {
+                const span = document.createElement('span');
+                span.className = 'hidden'; // Initialement caché
+                span.textContent = text[index++];
+                element.appendChild(span);
+                
+                // Afficher chaque lettre avec un léger délai
+                setTimeout(() => {
+                    span.classList.remove('hidden');
+                    span.classList.add('visible');
+                }, delay * index); // Délai croissant pour chaque lettre
+
+                // Rappelle la fonction pour la lettre suivante
+                setTimeout(typeLetter, delay);
+            } else {
+                setTimeout(() => {
+                    cursor.remove();
+                }, 500);
+            }
+        }
+
+        typeLetter(); // Lance l'animation
+    }
+
+    // Démarrer l'animation pour le titre et la description
+    typeText(document.getElementById('title'), titleText, 100);
+    typeText(document.getElementById('description'), descriptionText, 50);
+
+    // Démarre l'animation pour le texte du footer après 2 secondes
+    const footerTextEl = document.getElementById('footer-text');
+    setTimeout(() => {
+        footerTextEl.classList.add('animate-footer');
+    }, 2000);
+</script>
+
+<!-- Font Awesome for social icons -->
+<script src="https://kit.fontawesome.com/a076d05399.js"></script>
+
+</body>
+</html>

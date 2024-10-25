@@ -1,0 +1,48 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - AI Project</title>
+    <link rel="stylesheet" href="{% static 'src/output.css' %}">
+    <style>
+        /* Styles pour l'arrière-plan */
+        .bg-ai {
+            background-image: url("{% static 'images/background.jpg' %}");
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+
+        /* Effet de verre givré */
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px) contrast(1.2);
+        }
+    </style>
+</head>
+<body class="bg-ai h-screen flex items-center justify-center">
+    
+    <div class="glass-effect p-10 max-w-md w-full mx-4 rounded-lg shadow-lg">
+        <h2 class="text-4xl font-bold text-white text-center mb-6">Sign In</h2>
+        <form action="" method="post">
+            {% csrf_token %}
+            <div class="mb-4">
+                <label class="block text-gray-200 text-sm font-semibold mb-2" for="username">Username</label>
+                <input type="text" name="username" id="username" class="w-full p-3 rounded bg-transparent border border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 text-white" required>
+            </div>
+            <div class="mb-6">
+                <label class="block text-gray-200 text-sm font-semibold mb-2" for="password">Password</label>
+                <input type="password" name="password" id="password" class="w-full p-3 rounded bg-transparent border border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 text-white" required>
+            </div>
+            <button type="submit" class="w-full py-3 bg-blue-600 hover:bg-blue-800 transition duration-300 text-white font-semibold rounded">Login</button>
+        </form>
+        <p class="text-center text-sm text-gray-200 mt-6">
+            Don't have an account?
+            <a href="" class="text-blue-400 hover:underline">Register here</a>
+        </p>
+    </div>
+
+</body>
+</html>

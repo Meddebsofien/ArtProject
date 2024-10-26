@@ -86,5 +86,16 @@ def commentaire_delete(request, pk):
     
     
     commentaire.delete()
-    return redirect('publication_details', pk=commentaire.publication.id)  # Redirige vers les détails de la publication
-
+    return redirect('publication_details', pk=commentaire.publication.id)  
+def commentaire_update(request, pk):
+    commentaire = get_object_or_404(Commentaire, pk=pk)
+    
+    if request.method == 'POST':
+        commentaire.contenu = request.POST.get('contenu')
+        
+        commentaire.save()
+        
+        messages.success(request, 'Comment updated successfully')
+        return redirect('publication_details', pk=commentaire.publication.pk)  # Redirect to the publication's detail page
+    
+    return render(request, 'commentaire_update.html', {'commentaire': commentaire})

@@ -10,6 +10,7 @@ urlpatterns = [
     path('comment/<str:pk>', views.publication_comment, name='publication_comment'), 
     path('commentaire/delete/<str:pk>/', views.commentaire_delete, name='commentaire_delete'),
 
+    path('commentaire/update/<str:pk>/', views.commentaire_update, name='commentaire_update'),
 
 
 

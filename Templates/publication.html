@@ -7,50 +7,108 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Liste des Publications</title>
     <link rel="stylesheet" href="{% static 'src/output.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
     <style>
         .hero-section {
             background-size: contain;
-            /*background-size: cover;*/
             background-position: center;
             background-attachment: fixed;
+        }
+        .card img {
+            width: 100%; /* Responsive image width */
+            height: 390px; /* Change this value according to your needs */
+            object-fit: cover; /* Ensure images fill their container */
+        }
+        .description-container {
+            border: 1px solid #ccc; /* Thin border */
+            padding: 10px; /* Space inside the frame */
+            height: 122px; /* Fixed height for description */
+            overflow: hidden; /* Hide overflow */
+            position: relative; /* To position the icon */
+        }
+        .comment-section {
+            display: flex; /* Use flexbox to align input and button */
+            align-items: center; /* Align vertically */
+            margin-top: 10px; /* Space above comment section */
+        }
+        .comment-input {
+            flex-grow: 1; /* Allow input to take available space */
+            margin-right: 10px; /* Space between input and button */
         }
     </style>
 </head>
 <body class="bg-gray-900 text-gray-800">
-    <!-- Inclure la barre de navigation -->
     {% include 'navbar.html' %}
-    <div class="mt-3 mb-4 ">
-        <a href="{% url 'publication_create'  %}"
-                       class="inline-flex float-right px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-500 dark:hover:bg-blue-600 dark:focus:ring-blue-800 mt-auto">
-                       Create 
-                    </a>
+    <div class="mt-3 mb-4">
+        <a href="{% url 'publication_create' %}"
+           class="inline-flex float-right px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-500 dark:hover:bg-blue-600 dark:focus:ring-blue-800 mt-auto">
+            Create 
+        </a>
     </div>
     <div class="container mx-auto mt-2 mb-3 p-8">
-        <!-- Grid responsive pour les cards -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {% for publication in list_publications %}
-                <!-- Card de publication -->
-                <div class="bg-white border rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300 flex flex-col h-full">
+                <div class="bg-white border rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300 flex flex-col h-full card">
                     <a href="#">
-                        <img class="w-full h-49 h-max-49 object-cover" src="{{ publication.image.url }}" alt="{{ publication.titre }}">
+                        <img class="w-full object-cover" src="{{ publication.image.url }}" alt="{{ publication.titre }}">
                     </a>
                     <div class="p-6 flex flex-col flex-grow">
-                        <h2 class="text-2xl font-semibold text-gray-900 mb-3">{{ publication.titre }}</h2>
-                        <p class="text-gray-700 mb-4">{{ publication.description }}</p>
-                
-                        <!-- Button always at the bottom -->
-                        <a href="{% url 'publication_details' publication.id %}"
-                           class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-500 dark:hover:bg-blue-600 dark:focus:ring-blue-800 mt-auto">
-                           View Details
-                        </a>
+                        <div class="flex justify-between items-center mb-3">
+                            <h2 class="text-2xl font-semibold text-gray-900">{{ publication.titre }}</h2>
+                            <a href="{% url 'publication_details' publication.id %}"
+                               class="inline-flex items-center px-2 py-1 text-xs font-medium text-white bg-blue-600 rounded hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-500 dark:hover:bg-blue-600 dark:focus:ring-blue-800 transition duration-300 ease-in-out">
+                               <i class="fas fa-eye mr-1"></i> <!-- Eye icon for visual cue -->
+                               View
+                            </a>
+                        </div>
+                        <div class="description-container">
+                            <p id="description-{{ publication.id }}" class="text-gray-700 mb-4">
+                                {{ publication.description|truncatewords:12 }} 
+                                {% if publication.description|length > 12 %}
+                                    <i class="fas fa-chevron-down text-blue-600 cursor-pointer" 
+                                       onclick="showNextSegment(event, '{{ publication.id }}', '{{ publication.description|escapejs }}', 12)" 
+                                       title="Voir plus"></i>
+                                {% endif %}
+                            </p>
+                        </div>
+                        <!-- Comment Section -->
+                        <div class="comment-section">
+                            <form action="{% url 'publication_comment' publication.id %}" method="post" style="display: flex; width: 100%;">
+                                {% csrf_token %}
+                                <input type="text" name="contenu" class="comment-input mt-1 text-gray-700 block border border-gray-300 rounded-md shadow-sm focus:ring-blue-200" placeholder=" Comment this post ..." />
+                                <button type="submit" class="inline-flex mt-1 h-7 items-center px-4 py-2 text-sm font-medium text-white bg-gray-500 rounded-lg focus:ring-4 focus:outline-none focus:ring-blue-300 dark:hover:bg-blue-600 dark:focus:ring-blue-800">
+                                    Comment
+                                </button>
+                            </form>
+                        </div>
                     </div>
                 </div>
-                
-                {% empty %}
-                    <p class="text-center text-gray-500 col-span-3">Aucune publication disponible.</p>
-                {% endfor %}
-            </div>
+            {% empty %}
+                <p class="text-center text-gray-500 col-span-3">Aucune publication disponible.</p>
+            {% endfor %}
         </div>
+    </div>
+
+    <script>
+        function showNextSegment(event, id, fullText, currentLength) {
+            const description = document.getElementById(`description-${id}`);
+            const icon = event.target;
+
+            // Calculate the next segment length
+            let nextLength = currentLength + 12;
+
+            // Check if we have more text to show
+            if (nextLength < fullText.length) {
+                description.innerText = fullText.substring(0, nextLength) + '...';
+                icon.onclick = function() {
+                    showNextSegment(event, id, fullText, nextLength);
+                };
+            } else {
+                description.innerText = fullText; // Show full text
+                icon.style.display = 'none'; // Hide icon if no more text
+            }
+        }
+    </script>
 </body>
 </html>

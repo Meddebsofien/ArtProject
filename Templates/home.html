@@ -1,7 +1,6 @@
 <!-- home.html -->
 {% load static %}
 
-<!-- home.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -47,6 +46,108 @@
             background-position: center;
             background-attachment: fixed;
         }
+
+        /* Styles de la modale */
+        .modal {
+            display: none; /* Cacher par défaut */
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.8); /* Fond sombre */
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: #1f1f1f;
+            margin: 15% auto; /* Centre la modale */
+            padding: 20px;
+            border: 1px solid #444;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 500px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            animation: popIn 0.4s ease;
+        }
+
+        @keyframes popIn {
+            from {
+                transform: scale(0.7);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .close {
+            color: #fff;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .option-button {
+            display: inline-block;
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            transition: background-color 0.3s;
+            margin: 10px;
+        }
+
+        .option-button:hover {
+            background-color: #0056b3;
+        }
+
+        .card-title {
+    color: #ffffff;
+    font-size: 1.75rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+}
+
+.card-description {
+    color: #ffffff;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+}
+
+.card-button {
+    background-color: #ffffff;
+    color: #1a1a1a;
+    padding: 0.75rem 1.5rem;
+    border-radius: 5px;
+    text-decoration: none;
+    transition: background-color 0.3s;
+}
+
+.card-button:hover {
+    background-color: #f0f0f0;
+    color: #000;
+}
+
+.card {
+    background-color: #1f1f1f;
+    border-radius: 10px;
+    padding: 2rem;
+    transition: transform 0.3s, background-color 0.3s;
+}
+
+.card:hover {
+    transform: scale(1.05);
+}
+
+
     </style>
 </head>
 <body class="bg-gray-900 text-white">
@@ -59,11 +160,99 @@
         <div class="z-10 text-center typewriter">
             <h1 class="text-5xl md:text-6xl font-bold mb-4">Welcome to the Future of AI</h1>
             <p class="text-xl md:text-2xl mb-8">Innovative Solutions Powered by AI</p>
-            <a href="#about" class="px-8 py-3 bg-blue-500 hover:bg-blue-700 transition duration-300 rounded-full text-lg font-semibold">
+            <button id="getStartedBtn" class="px-8 py-3 bg-blue-500 hover:bg-blue-700 transition duration-300 rounded-full text-lg font-semibold">
                 Get Started
-            </a>
+            </button>
         </div>
     </section>
 
+ <!-- Section des cartes -->
+<section class="card-container py-10">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-7xl mx-auto">
+        
+        <!-- Free Plan Card -->
+        <div class="card bg-gradient-to-r from-green-400 via-blue-500 to-purple-500 hover:shadow-xl transition-all duration-300 rounded-lg p-6">
+            <h3 class="card-title text-3xl font-bold mb-4">Free</h3>
+            <p class="text-2xl font-bold mb-4">€0/mois</p>
+            <ul class="list-disc list-inside mb-4">
+                <li>Text-to-Image (Limited)</li>
+                <li>Basic Photo Editing</li>
+                <li>Colorize 5 Photos/Month</li>
+            </ul>
+            <a href="#" class="card-button bg-white text-green-500 py-2 px-4 rounded shadow">Get Started for Free</a>
+        </div>
+
+        <!-- Basic Plan Card -->
+        <div class="card bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 hover:shadow-xl transition-all duration-300 rounded-lg p-6">
+            <h3 class="card-title text-3xl font-bold mb-4">Basic</h3>
+            <p class="text-2xl font-bold mb-4">€25/mois</p>
+            <ul class="list-disc list-inside mb-4">
+                <li>Text-to-Image (Unlimited)</li>
+                <li>Advanced Photo Editing Tools</li>
+                <li>Colorize 20 Photos/Month</li>
+                <li>Remove Image Backgrounds</li>
+            </ul>
+            <a href="#" class="card-button bg-white text-yellow-600 py-2 px-4 rounded shadow">Start Basic Plan</a>
+        </div>
+
+        <!-- Premium Plan Card -->
+        <div class="card bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 hover:shadow-xl transition-all duration-300 rounded-lg p-6">
+            <h3 class="card-title text-3xl font-bold mb-4">Premium</h3>
+            <p class="text-2xl font-bold mb-4">€75/mois</p>
+            <ul class="list-disc list-inside mb-4">
+                <li>Text-to-Image (Unlimited, High-Res)</li>
+                <li>Full Suite of AI Editing Tools</li>
+                <li>Colorize Unlimited Photos</li>
+                <li>Remove Backgrounds and Apply Filters</li>
+                <li>Priority Customer Support</li>
+            </ul>
+            <a href="#" class="card-button bg-white text-pink-500 py-2 px-4 rounded shadow">Get Premium Access</a>
+        </div>
+
+    </div>
+</section>
+
+
+
+
+    <!-- Modale -->
+    <div id="myModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2 class="text-2xl font-bold mb-4">Choose an Option</h2>
+            <p class="mb-6">Select one of the following options to get started:</p> <br>
+            <a href="{% url 'promptext' %}" class="option-button">Generate Image from Text</a> <br>
+            <a href="/colorpic/" class="option-button">Colorize Image</a> <br>
+            <a href="/another-option/" class="option-button">Another Option</a>
+        </div>
+    </div>
+
+    <script>
+        // Récupérer la modale
+        var modal = document.getElementById("myModal");
+
+        // Récupérer le bouton qui ouvre la modale
+        var btn = document.getElementById("getStartedBtn");
+
+        // Récupérer l'élément <span> qui ferme la modale
+        var span = document.getElementsByClassName("close")[0];
+
+        // Quand l'utilisateur clique sur le bouton, ouvrir la modale
+        btn.onclick = function() {
+            modal.style.display = "flex"; // Afficher la modale
+        }
+
+        // Quand l'utilisateur clique sur <span> (x), fermer la modale
+        span.onclick = function() {
+            modal.style.display = "none";
+        }
+
+        // Quand l'utilisateur clique n'importe où en dehors de la modale, la fermer
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+    </script>
 </body>
 </html>

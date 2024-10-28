@@ -95,12 +95,15 @@
 
                 <!-- Boutons de mise à jour et suppression -->
                 <div class="flex justify-between p-4">
+                    {% if request.user == publication.user %}
                     <a href="{% url 'publication_update' publication.id %}" class="px-4 py-2 text-white bg-blue-600 rounded hover:bg-blue-700">
-                        Modifier
+                        Edit
                     </a>
                     <a href="{% url 'publication_delete' publication.id %}" class="px-4 py-2 text-white bg-blue-600 rounded hover:bg-blue-700">
-                        Supprimer
+                        Delete
                     </a>
+                {% endif %}
+                
                     <form method="POST" action="{% url 'evaluate_damage' publication.pk %}">
                         {% csrf_token %}
                         <button type="submit" class="w-full bg-blue-600 text-white font-semibold py-2 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">

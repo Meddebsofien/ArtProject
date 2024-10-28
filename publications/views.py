@@ -54,7 +54,7 @@ def publication_update(request, pk):
         publication.save()
         
         messages.success(request, 'Publication updated successfully')
-        return redirect('/publications')  # Replace with your desired redirect URL
+        return redirect('/publications')  
     
     return render(request, 'publication_update.html', {'publication': publication})
 def publication_details(request, pk):
@@ -105,12 +105,15 @@ def publication_comment(request, pk):
         'publication': publication,
         'page_obj': page_obj  
     })
+    
 def commentaire_delete(request, pk):
     commentaire = get_object_or_404(Commentaire, pk=pk)
     
     
     commentaire.delete()
     return redirect('publication_details', pk=commentaire.publication.id)  
+@login_required
+
 def commentaire_update(request, pk):
     commentaire = get_object_or_404(Commentaire, pk=pk)
     
@@ -179,11 +182,10 @@ if submit:
 
 def evaluate_damage(publication_image, user_input):
     image = Image.open(publication_image)
-    user_input = "Rate the damage of the image out of 100, focusing on its form and design , aspects like structure, colors, etc ,independently of its content. without other words, only with this format ../100 "
+    user_input = "Rate the damage of the image out of 100 without other words, only with this format ../100 "
     response = model.generate_content([user_input, image])
     
     return response.text  
-@login_required
 @login_required
 def evaluate_damage_view(request, pk):
     publication = get_object_or_404(Publication, pk=pk)
@@ -192,7 +194,7 @@ def evaluate_damage_view(request, pk):
 
     if request.method == 'POST':
         if publication.image:
-            damage_score = evaluate_damage(publication.image, user_input="Rate the damage of the image out of 100, considering aspects like structure, colors, etc even  though there is human. without other words, only with this format ../100")
+            damage_score = evaluate_damage(publication.image, user_input="Rate the damage of the image out of 100 . without other words, only with this format ../100")
             messages.success(request, f'Damage score: {damage_score}')
             show_damage_score = True  
         else:

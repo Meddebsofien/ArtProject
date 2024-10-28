@@ -9,6 +9,6 @@ urlpatterns = [
     path('colorpic/', include('colorpic.urls')),
     path('textetoimage/', include('textetoimage.urls')),
     path('reclamations/', include('reclamation.urls') , name='reclamations'),
-    
+    path('publications/', include('publications.urls')),
 
 ]

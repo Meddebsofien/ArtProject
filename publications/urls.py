@@ -11,6 +11,6 @@ urlpatterns = [
     path('commentaire/delete/<str:pk>/', views.commentaire_delete, name='commentaire_delete'),
     path('commentaire/update/<str:pk>/', views.commentaire_update, name='commentaire_update'),
     path('generate-description/', views.generate_description, name='generate_description'),
-
+    path('evaluate_damage/<int:pk>/', views.evaluate_damage_view, name='evaluate_damage'),
 
 ]

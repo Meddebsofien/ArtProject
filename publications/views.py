@@ -1,5 +1,7 @@
 import json
 import os
+from dotenv import load_dotenv
+load_dotenv()
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, render, redirect
 from PythonProject import settings
@@ -8,9 +10,15 @@ from django.contrib import messages
 from django.core.paginator import Paginator
 import google.generativeai as genai
 import requests
+from PIL import Image
+
+import streamlit as st
 from django.contrib.auth.decorators import login_required
 
 GOOGLE_API_KEY='AIzaSyA44yvXfrO788vxbfnSk2R2sdyRj1m8jGA'
+genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
+
+
 @login_required
 def publication(request):
     list_publications=Publication.objects.all()
@@ -57,6 +65,8 @@ def publication_details(request, pk):
 
     return render(request, 'publication_details.html', {
         'publication': publication,
+        'image_url': publication.image.url , # Image path to pass to Streamlit
+
         'page_obj': page_obj  
     })
 
@@ -127,7 +137,7 @@ def generate_description(request):
         titre = data.get('titre', '')
         description = ai_generate_description(titre)
 
-        print(f'Title: {titre}, Generated Description: {description}')  # Log the inputs and outputs
+        print(f'Title: {titre}, Generated Description: {description}')  
 
         if description:
             return JsonResponse({'description': description})
@@ -138,3 +148,51 @@ def generate_description(request):
 
 
 
+model = genai.GenerativeModel("gemini-1.5-flash")  
+
+def get_gemini_response(input, image):
+    if input != "":
+        response = model.generate_content([input, image])
+    else:
+        response = model.generate_content(image)
+    return response.text
+
+st.set_page_config(page_title="Image Evaluation")
+
+st.header("Image Evaluation")
+input = st.text_input("Input:", key="input")
+image = ""
+
+submit = st.button("Rate damage of the image out of 100")
+
+if submit:
+    response = get_gemini_response(input, image)
+    st.subheader("The response is")
+    st.write(response)
+
+def evaluate_damage(publication_image, user_input):
+    image = Image.open(publication_image)
+    user_input = "Rate the damage of the image out of 100, considering aspects like structure, colors, etc. without other words, only with this format ../100 "
+    response = model.generate_content([user_input, image])
+    
+    return response.text  
+@login_required
+@login_required
+def evaluate_damage_view(request, pk):
+    publication = get_object_or_404(Publication, pk=pk)
+    damage_score = None  # Initialize damage_score
+    show_damage_score = False 
+
+    if request.method == 'POST':
+        if publication.image:
+            damage_score = evaluate_damage(publication.image, user_input="Rate the damage of the image out of 100, considering aspects like structure, colors, etc even  though there is human. without other words, only with this format ../100")
+            messages.success(request, f'Damage score: {damage_score}')
+            show_damage_score = True  
+        else:
+            messages.error(request, 'No image found for this publication.')
+
+    return render(request, 'publication_details.html', {
+        'publication': publication,
+        'damage_score': damage_score,  
+        'show_damage_score': show_damage_score,  # Include the flag
+    })

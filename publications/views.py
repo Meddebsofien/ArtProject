@@ -41,7 +41,9 @@ def publication_create(request):
     return render(request, 'publication_create.html')
 def publication_update(request, pk):
     publication = get_object_or_404(Publication, pk=pk)
-    
+    if request.user != publication.user and not request.user.is_staff:
+        messages.error(request, 'You do not have permission to edit this publication.')
+        return redirect('/publications')  # Red
     if request.method == 'POST':
         publication.titre = request.POST.get('titre')
         publication.description = request.POST.get('description')
@@ -71,6 +73,11 @@ def publication_details(request, pk):
     })
 
 def publication_delete(request, pk):
+    publication = get_object_or_404(Publication, pk=pk)
+
+    if request.user != publication.user and not request.user.is_staff:
+        messages.error(request, 'You do not have permission to edit this publication.')
+        return redirect('/publications')  # Red
     publication = Publication.objects.filter(id=pk)
     publication.delete()
     messages.success(request , "Post deleted Successefully")
@@ -172,7 +179,7 @@ if submit:
 
 def evaluate_damage(publication_image, user_input):
     image = Image.open(publication_image)
-    user_input = "Rate the damage of the image out of 100, considering aspects like structure, colors, etc. without other words, only with this format ../100 "
+    user_input = "Rate the damage of the image out of 100, focusing on its form and design , aspects like structure, colors, etc ,independently of its content. without other words, only with this format ../100 "
     response = model.generate_content([user_input, image])
     
     return response.text  
@@ -193,6 +200,5 @@ def evaluate_damage_view(request, pk):
 
     return render(request, 'publication_details.html', {
         'publication': publication,
-        'damage_score': damage_score,  
-        'show_damage_score': show_damage_score,  # Include the flag
+        'damage_score': damage_score
     })

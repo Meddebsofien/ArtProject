@@ -1,16 +1,12 @@
 # your_app/forms.py
 
 from django import forms
-from .models import Reclamation, Feedback
+from .models import  Feedback
 
 # forms.py
 from django import forms
-from .models import Reclamation
 
-class ReclamationForm(forms.ModelForm):
-    class Meta:
-        model = Reclamation
-        fields = ['description', 'status']  # Assurez-vous que ces champs sont inclus
+
 
 
 

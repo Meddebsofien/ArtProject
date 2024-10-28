@@ -2,8 +2,8 @@
 
 from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import Reclamation, Feedback
-from .forms import ReclamationForm, FeedbackForm
+from .models import  Feedback
+from .forms import FeedbackForm
 import matplotlib.pyplot as plt
 from django.views import View
 from django.conf import settings
@@ -94,55 +94,7 @@ class ColorizationView(View):
 
 # Liste des réclamations
 
-def reclamation_list(request):
-    reclamations = Reclamation.objects.all()
-    return render(request, 'reclamation_list.html', {'reclamations': reclamations})
 
-# Création d'une réclamation
-@login_required  # Assurez-vous que l'utilisateur est connecté
-def reclamation_create(request):
-    if request.method == 'POST':
-        form = ReclamationForm(request.POST)
-        if form.is_valid():
-            reclamation = form.save(commit=False)
-            reclamation.user = request.user  # Assurez-vous d'attribuer l'utilisateur
-            reclamation.save()
-            return redirect('reclamation_list')
-    else:
-        form = ReclamationForm()
-    
-    return render(request, 'reclamation_form.html', {'form': form})
-# Détails d'une réclamation
-def reclamation_detail(request, pk):
-    reclamation = get_object_or_404(Reclamation, pk=pk)
-    return render(request, 'reclamation_detail.html', {'reclamation': reclamation})
-
-# Mise à jour d'une réclamation
-# views.py
-from django.shortcuts import render, get_object_or_404, redirect
-from .models import Reclamation
-from .forms import ReclamationForm
-
-def reclamation_update(request, reclamation_id):
-    reclamation = get_object_or_404(Reclamation, id=reclamation_id)
-
-    if request.method == 'POST':
-        form = ReclamationForm(request.POST, instance=reclamation)
-        if form.is_valid():
-            form.save()
-            return redirect('reclamation_list')  # Assurez-vous que 'reclamation_list' est bien défini
-    else:
-        form = ReclamationForm(instance=reclamation)
-
-    return render(request, 'reclamation_update.html', {'form': form, 'reclamation': reclamation})  # Mettez à jour le chemin ici
-
-# Suppression d'une réclamation
-def reclamation_delete(request, reclamation_id):
-    reclamation = get_object_or_404(Reclamation, id=reclamation_id)
-    
-    reclamation.delete()
-        
-    return redirect ('reclamation_list')
 
 
 # Création d'un feedback

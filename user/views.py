@@ -9,6 +9,8 @@ from django.conf import settings
 from django.core.mail import EmailMessage
 from django.utils import timezone
 from django.urls import reverse
+
+from publications.models import Publication
 from .models import PasswordReset  
 from django.contrib.auth import get_user_model
 from django.core.files.storage import FileSystemStorage
@@ -103,6 +105,17 @@ def LogoutView(request):
 
     return redirect('login')
 
+@login_required
+def PublicationsView(request):
+    list_publications=Publication.objects.all()
+    print(list_publications)
+    context = {"list_publications": list_publications}  
+    return render(request, "publication.html", context)
+@login_required
+def GalleryView(request):
+    list_publications = Publication.objects.filter(user=request.user)
+    context = {"list_publications": list_publications}
+    return render(request, "publication.html", context)
 def ForgotPassword(request):
 
     if request.method == "POST":

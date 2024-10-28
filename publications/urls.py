@@ -9,9 +9,7 @@ urlpatterns = [
     path('delete/<str:pk>', views.publication_delete, name='publication_delete'), 
     path('comment/<str:pk>', views.publication_comment, name='publication_comment'), 
     path('commentaire/delete/<str:pk>/', views.commentaire_delete, name='commentaire_delete'),
-
     path('commentaire/update/<str:pk>/', views.commentaire_update, name='commentaire_update'),
-
     path('generate-description/', views.generate_description, name='generate_description'),
 
 

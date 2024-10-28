@@ -57,6 +57,7 @@
                             <div class="flex-1">
                                 <p>{{ commentaire.contenu }}</p>
                                 <p><small>{{ commentaire.created_at|timesince }} ago</small></p>
+                                <p>Crée par : {{commentaire.user.username}}</p>
                             </div>
                             <div class="flex items-center">
                                 <a href="{% url 'commentaire_update' commentaire.id %}" title="Modifier">

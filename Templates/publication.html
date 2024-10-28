@@ -62,6 +62,8 @@
                                View
                             </a>
                         </div>
+                        <p>Créée par : {{ publication.user.username }}</p>  <!-- Affichage de l'utilisateur qui a créé la publication -->
+
                         <div class="description-container">
                             <p id="description-{{ publication.id }}" class="text-gray-700 mb-4">
                                 {{ publication.description|truncatewords:12 }} 

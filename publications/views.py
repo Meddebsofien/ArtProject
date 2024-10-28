@@ -8,20 +8,24 @@ from django.contrib import messages
 from django.core.paginator import Paginator
 import google.generativeai as genai
 import requests
-GOOGLE_API_KEY='AIzaSyA44yvXfrO788vxbfnSk2R2sdyRj1m8jGA'
+from django.contrib.auth.decorators import login_required
 
+GOOGLE_API_KEY='AIzaSyA44yvXfrO788vxbfnSk2R2sdyRj1m8jGA'
+@login_required
 def publication(request):
     list_publications=Publication.objects.all()
+    print(list_publications)
     context = {"list_publications": list_publications}  
     return render(request, "publication.html", context)
+@login_required 
 def publication_create(request):
     if request.method == 'POST':
         pub=Publication()
         pub.titre = request.POST.get('titre')
         pub.description = request.POST.get('description')
+        pub.user = request.user 
         if 'image' in request.FILES:  
-            pub.image = request.FILES['image']  # Changed from request.FILES('titre') to request.FILES['image']
-
+            pub.image = request.FILES['image']  
         pub.save()
         messages.success(request , 'created successfully')
         return redirect('/publications')
@@ -60,14 +64,16 @@ def publication_delete(request, pk):
     publication = Publication.objects.filter(id=pk)
     publication.delete()
     messages.success(request , "Post deleted Successefully")
-    return redirect('/publications')  
+    return redirect('/publications') 
+@login_required 
 def publication_comment(request, pk):
     publication = get_object_or_404(Publication, id=pk)
     
     if request.method == 'POST':
         contenu = request.POST.get('contenu')
        
-        commentaire = Commentaire(publication=publication, contenu=contenu)
+        commentaire = Commentaire(publication=publication, contenu=contenu )
+        commentaire.user = request.user
         commentaire.save()
       
 

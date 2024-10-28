@@ -1,19 +1,25 @@
+import json
+import os
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, render, redirect
+from PythonProject import settings
 from .models import Commentaire, Publication
 from django.contrib import messages
 from django.core.paginator import Paginator
+import google.generativeai as genai
+import requests
+GOOGLE_API_KEY='AIzaSyA44yvXfrO788vxbfnSk2R2sdyRj1m8jGA'
 
 def publication(request):
     list_publications=Publication.objects.all()
-    context = {"list_publications": list_publications}  # Correspond à ce que tu veux utiliser dans le template
+    context = {"list_publications": list_publications}  
     return render(request, "publication.html", context)
 def publication_create(request):
     if request.method == 'POST':
         pub=Publication()
         pub.titre = request.POST.get('titre')
         pub.description = request.POST.get('description')
-        if 'image' in request.FILES:  # Check if 'image' is in request.FILES
+        if 'image' in request.FILES:  
             pub.image = request.FILES['image']  # Changed from request.FILES('titre') to request.FILES['image']
 
         pub.save()
@@ -22,22 +28,17 @@ def publication_create(request):
          
     return render(request, 'publication_create.html')
 def publication_update(request, pk):
-    # Fetch the specific publication instance or return a 404 if not found
     publication = get_object_or_404(Publication, pk=pk)
     
     if request.method == 'POST':
-        # Update publication fields with values from the form
         publication.titre = request.POST.get('titre')
         publication.description = request.POST.get('description')
         
-        # Update the image if a new one is uploaded
         if 'image' in request.FILES:
             publication.image = request.FILES['image']
         
-        # Save the updated instance
         publication.save()
         
-        # Success message and redirect
         messages.success(request, 'Publication updated successfully')
         return redirect('/publications')  # Replace with your desired redirect URL
     
@@ -96,6 +97,38 @@ def commentaire_update(request, pk):
         commentaire.save()
         
         messages.success(request, 'Comment updated successfully')
-        return redirect('publication_details', pk=commentaire.publication.pk)  # Redirect to the publication's detail page
+        return redirect('publication_details', pk=commentaire.publication.pk)  
     
     return render(request, 'commentaire_update.html', {'commentaire': commentaire})
+
+
+
+
+
+
+
+
+def ai_generate_description(titre):
+    model = genai.GenerativeModel('gemini-1.5-flash')
+    prompt = f"Generer un description pour ce titre d'une oeuvre d'art: {titre}"
+    
+    response = model.generate_content(prompt)
+    return response.text
+
+def generate_description(request):
+    if request.method == "POST":
+        data = json.loads(request.body)
+        titre = data.get('titre', '')
+        description = ai_generate_description(titre)
+
+        print(f'Title: {titre}, Generated Description: {description}')  # Log the inputs and outputs
+
+        if description:
+            return JsonResponse({'description': description})
+        else:
+            return JsonResponse({'error': 'Failed to generate description'}, status=500)
+
+    return JsonResponse({'error': 'Invalid request'}, status=400)
+
+
+

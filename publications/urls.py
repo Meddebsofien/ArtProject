@@ -12,6 +12,7 @@ urlpatterns = [
 
     path('commentaire/update/<str:pk>/', views.commentaire_update, name='commentaire_update'),
 
+    path('generate-description/', views.generate_description, name='generate_description'),
 
 
 ]

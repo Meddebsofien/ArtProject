@@ -7,7 +7,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit Publication</title>
+    <title>Create Publication</title>
     <link rel="stylesheet" href="{% static 'src/output.css' %}">
 </head>
 <body class="bg-gray-900 ">
@@ -22,8 +22,33 @@
                 </div>
                 <div class="mb-4">
                     <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
-                    <textarea required name="description" class="mt-1 text-gray-700 block w-full border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200" placeholder="Enter the description"></textarea>
+                    <textarea required id="description" name="description" rows="5" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200" placeholder="Enter the description"></textarea>
+                    <button type="button" class="mx-2 btn btn-secondary" id="generatedescription">Generate Description</button>
+                    <script>
+                        document.getElementById('generatedescription').addEventListener('click', function() {
+                            const title = document.querySelector('[name="titre"]').value; // Use querySelector for a more generic approach
+                            fetch('{% url "generate_description" %}', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRFToken': '{{ csrf_token }}'
+                                },
+                                body: JSON.stringify({ titre: title })
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.description) {
+                                    document.getElementById('description').value = data.description;
+                                } else {
+                                    console.error('No description returned:', data);
+                                }
+                            })
+                            .catch(error => console.error('Error:', error));
+                        });
+                    </script>
                 </div>
+                
+                
                 <div class="mb-4">
                     <label for="image" class="block text-sm font-medium text-gray-700">Image</label>
                     <input type="file" required name="image" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200">

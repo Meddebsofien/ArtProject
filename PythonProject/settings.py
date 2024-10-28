@@ -12,13 +12,17 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 
 from pathlib import Path
 import environ
+from dotenv import load_dotenv
 import os
+dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
+load_dotenv(dotenv_path)
 # Initialise django-environ
 env = environ.Env()
 environ.Env.read_env()  # Lire le fichier .env
+GOOGLE_API_KEY='AIzaSyA44yvXfrO788vxbfnSk2R2sdyRj1m8jGA'
 
 # Maintenant, vous pouvez accéder à la clé API comme suit
-HUGGINGFACE_API_TOKEN = env("HUGGINGFACE_API_TOKEN")
+HUGGINGFACE_API_TOKEN = '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'
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -43,17 +47,22 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    'django.contrib.humanize',
     'django.contrib.staticfiles',
     'MyApp',
     'colorpic',
     'compressor',
     'textetoimage',
     'user',
+    'publications',
+   
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',  # Add this line
+
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',

@@ -20,8 +20,11 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('MyApp.urls')),
+    path('', include('user.urls')),
     path('colorpic/', include('colorpic.urls')),
+    path('textetoimage/', include('textetoimage.urls')),
+    
+
     path('publications/', include('publications.urls')),  # Inclure les routes de publications
     
 ]

@@ -1,0 +1,263 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - AI Project</title>
+    <link rel="stylesheet" href="{% static 'src/style.css' %}">
+    <style>
+        /* Styles pour l'arrière-plan */
+        .bg-ai {
+            background-image: url("{% static 'images/background.jpg' %}");
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Effet de verre givré */
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(15px) contrast(1.2);
+            padding: 30px;
+            border-radius: 15px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Styles de formulaire */
+        .txt_field {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .txt_field input,
+        .txt_field select {
+            width: 100%;
+            padding: 10px;
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid #fff;
+            color: white;
+            font-size: 16px;
+            outline: none;
+        }
+
+        .txt_field label {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            color: #fff;
+            pointer-events: none;
+            transform: translateY(-50%);
+            transition: 0.5s;
+        }
+
+        .txt_field input:focus ~ label,
+        .txt_field input:valid ~ label {
+            top: -20px;
+            color: #03a9f4;
+            font-size: 12px;
+        }
+
+        .txt_field span::before {
+            content: '';
+            position: absolute;
+            top: 40px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: #03a9f4;
+            transition: 0.5s;
+            opacity: 0;
+        }
+
+        .txt_field input:focus ~ span::before {
+            opacity: 1;
+        }
+
+        input[type="submit"] {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            background: #03a9f4;
+            font-size: 18px;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        input[type="submit"]:hover {
+            background: #0288d1;
+        }
+
+        .signup_link {
+            text-align: center;
+            margin-top: 20px;
+            color: #fff;
+        }
+
+        .signup_link a {
+            color: #03a9f4;
+            text-decoration: none;
+        }
+
+        .signup_link a:hover {
+            text-decoration: underline;
+        }
+
+        /* Styles for photo upload */
+        .photo-upload {
+            position: relative;
+            overflow: hidden;
+            
+            border: 2px dashed #03a9f4;
+            border-radius: 5px;
+            padding: 10px;
+            text-align: center;
+            color: #fff;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+
+        .photo-upload input[type="file"] {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .thumbnail-preview {
+            max-width: 100%;
+            margin-top: 10px;
+            width: 20px;
+            height: 20px;
+            display: none; /* Hidden by default */
+        }
+
+        /* Styles for abonnement selection */
+        .abonnement-selection {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .abonnement-selection label {
+            color: #fff;
+            margin-right: 10px;
+        }
+
+        .abonnement-option {
+            display: flex;
+            align-items: center;
+        }
+
+        .abonnement-option input {
+            margin-right: 5px;
+        }
+    </style>
+</head>
+<body class="bg-ai">
+    <div class="glass-effect">
+        <h2 class="text-4xl font-bold text-white text-center mb-6">Register</h2>
+
+        {% if messages %}
+            {% for message in messages %}
+                <center>
+                    <h4 style="color: {% if message.tags == 'error' %}firebrick{% else %}dodgerblue{% endif %};">
+                        {{ message }}
+                    </h4>
+                </center>
+            {% endfor %}
+        {% endif %}
+
+        <form method="POST" enctype="multipart/form-data"> <!-- Add enctype for file upload -->
+            {% csrf_token %}
+
+            <div class="txt_field">
+                <input type="text" required name="first_name">
+                <span></span>
+                <label>First Name</label>
+            </div>
+
+            <div class="txt_field">
+                <input type="text" required name="last_name">
+                <span></span>
+                <label>Last Name</label>
+            </div>
+
+            <div class="txt_field">
+                <input type="text" required name="username">
+                <span></span>
+                <label>Username</label>
+            </div>
+
+            <div class="txt_field">
+                <input type="email" required name="email">
+                <span></span>
+                <label>Email</label>
+            </div>
+
+            <div class="txt_field">
+                <input type="password" required name="password">
+                <span></span>
+                <label>Password</label>
+            </div>    
+
+            <div class="photo-upload">
+                <label for="photo">Upload your photo</label>
+                <input type="file" name="photo" id="photo" accept="image/*" onchange="previewImage(event)">
+                <img id="thumbnail" class="thumbnail-preview w-5 h-5" alt="Photo Preview" >
+            </div>
+
+            <div class="abonnement-selection">
+               
+                <div class="abonnement-option">
+                    <input type="radio" id="pas_abonnement" name="abonnement" value="pas_abonnement" checked>
+                    <label for="pas_abonnement">Pas d'abonnement</label>
+                </div>
+                <div class="abonnement-option">
+                    <input type="radio" id="basic" name="abonnement" value="basic" disabled>
+                    <label for="basic" >Basic</label>
+                </div>
+                <div class="abonnement-option">
+                    <input type="radio" id="premium" name="abonnement" value="premium" disabled>
+                    <label for="premium">Premium</label>
+                </div>
+            </div>
+
+            <input type="submit" value="Register">
+            <div class="signup_link">
+                Already have an account? <a href="{% url 'login' %}">Login</a>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        function previewImage(event) {
+            const thumbnail = document.getElementById('thumbnail');
+            const file = event.target.files[0];
+
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    thumbnail.src = e.target.result;
+                    thumbnail.style.display = 'block'; // Show the thumbnail
+                }
+                reader.readAsDataURL(file);
+            } else {
+                thumbnail.style.display = 'none'; // Hide the thumbnail if no file is selected
+            }
+        }
+    </script>
+</body>
+</html>

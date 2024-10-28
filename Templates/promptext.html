@@ -1,0 +1,126 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Generator</title>
+    <link rel="stylesheet" href="{% static 'src/output.css' %}">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+
+    <style>
+        .generated-image {
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+        }
+        .fade-in {
+            opacity: 1;
+        }
+        .loader {
+            border: 8px solid #f3f3f3; /* Light grey */
+            border-top: 8px solid #3498db; /* Blue */
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        .star-rating {
+            cursor: pointer;
+            color: #ccc; /* Grey stars by default */
+            transition: color 0.3s ease-in-out;
+        }
+        .star-rating:hover, .star-rating.selected {
+            color: #ffd700; /* Gold color for hover and selected */
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        body {
+            background: linear-gradient(to right, #434343, #000000); /* Black/grey gradient for a modern look */
+        }
+    </style>
+</head>
+<body>
+    {% include 'navbar.html' %}
+<!-- Rating Section -->
+<div class="flex items-center mt-4" id="ratingSection">
+    <h2 class="text-lg text-white mr-2">Rate this tool:</h2>
+    <div id="stars" class="flex">
+        {% for i in "12345" %}
+            <svg class="star-rating w-6 h-6" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" data-value="{{ forloop.counter }}">
+                <path d="M12 2.25c-.413 0-.8.215-1.02.578l-2.366 4.455-5.159.691a1.125 1.125 0 00-.638 1.927l3.752 3.552-.96 5.095a1.125 1.125 0 001.676 1.191L12 17.844l4.715 2.405a1.125 1.125 0 001.676-1.191l-.96-5.095 3.752-3.552a1.125 1.125 0 00-.638-1.927l-5.159-.691-2.366-4.455a1.125 1.125 0 00-1.02-.578z"/>
+            </svg>
+        {% endfor %}
+    </div>
+</div>
+<div class="flex flex-col items-center justify-center min-h-screen text-gray-800">
+    <h1 class="text-3xl font-bold text-white mt-5">Generate an Image from Text</h1>
+    
+    
+
+    <form id="promptForm" class="mt-4 w-full max-w-md">
+        {% csrf_token %}
+        <label for="prompt" class="block mb-2 text-lg text-white">Enter a prompt:</label>
+        <input type="text" id="prompt" name="prompt" required class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-blue-500">
+        <button type="submit" class="mt-4 w-full bg-blue-500 text-white font-semibold py-2 rounded-md hover:bg-blue-600 transition duration-300">Generate Image</button>
+    </form>
+
+    <div class="loading hidden mt-4 text-lg text-white" id="loadingText">
+        <div class="loader"></div>
+    </div>
+
+    <div class="image-container mt-4" id="imageContainer"></div>
+
+    <script>
+        // Star Rating
+        document.querySelectorAll('.star-rating').forEach(star => {
+            star.addEventListener('click', function() {
+                let value = this.getAttribute('data-value');
+                document.querySelectorAll('.star-rating').forEach(s => {
+                    s.classList.remove('selected');
+                });
+                for (let i = 0; i < value; i++) {
+                    document.querySelectorAll('.star-rating')[i].classList.add('selected');
+                }
+            });
+        });
+
+        // Form submission for image generation
+        document.getElementById('promptForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            document.getElementById('loadingText').classList.remove('hidden');
+            document.getElementById('imageContainer').innerHTML = '';
+            const formData = new FormData(event.target);
+            const response = await fetch("{% url 'generate_image' %}", {
+                method: "POST",
+                body: formData
+            });
+            document.getElementById('loadingText').classList.add('hidden');
+            if (response.ok) {
+                const imageBlob = await response.blob();
+                const imageUrl = URL.createObjectURL(imageBlob);
+                const img = document.createElement('img');
+                img.src = imageUrl;
+                img.className = 'generated-image w-full max-w-sm rounded-md shadow-md';
+                setTimeout(() => img.classList.add('fade-in'), 100);
+                document.getElementById('imageContainer').appendChild(img);
+
+                const downloadButton = document.createElement('a');
+                downloadButton.href = imageUrl;
+                downloadButton.download = 'generated_image.png';
+                downloadButton.textContent = 'Download Image';
+                downloadButton.textContent = 'Download Image';
+                downloadButton.className = 'mt-2 w-full bg-green-500 text-white font-semibold py-2 rounded-md hover:bg-green-600 transition duration-300';
+                document.getElementById('imageContainer').appendChild(downloadButton);
+            } else {
+                const errorData = await response.json();
+                alert("Erreur : " + errorData.error);
+            }
+        });
+    </script>
+</div>
+</body>
+</html>

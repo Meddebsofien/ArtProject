@@ -1,0 +1,159 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile - AI Project</title>
+    <link rel="stylesheet" href="{% static 'src/output.css' %}">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #111;  /* Arrière-plan noir */
+            color: #fff;  /* Texte en blanc */
+            margin: 0;
+            padding: 0;
+        }
+
+        .profile-container {
+            max-width: 800px;
+            margin: 50px auto;
+            background: rgba(255, 255, 255, 0.1);  /* Fond semi-transparent */
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+        }
+
+        .profile-header {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .profile-header img {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 5px solid white;
+            margin-top: 20px;
+            cursor: pointer;  /* Indiquer que l'image est cliquable */
+        }
+
+        .profile-header h1 {
+            margin: 10px 0;
+            font-size: 2em;
+        }
+
+        .profile-header p {
+            margin: 5px 0;
+            font-size: 1.1em;
+        }
+
+        .profile-content {
+            padding: 20px;
+        }
+
+        .profile-section {
+            margin-bottom: 20px;
+            border-bottom: 1px solid #e0e0e0;
+            padding-bottom: 10px;
+        }
+
+        .profile-section h2 {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+            color: #4A90E2;
+        }
+
+        .profile-section p {
+            margin: 5px 0;
+        }
+
+        .edit-button {
+            background: #4A90E2;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            transition: background 0.3s;
+        }
+
+        .edit-button:hover {
+            background: #357ABD;
+        }
+
+        /* Style pour le formulaire d'upload */
+        .upload-form {
+            margin-top: 20px;
+        }
+        
+        input[type="file"] {
+            display: none; /* Cacher l'input de fichier */
+        }
+        
+        .upload-label {
+            background: #4A90E2;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer; /* Indiquer que c'est cliquable */
+            transition: background 0.3s;
+        }
+        
+        .upload-label:hover {
+            background: #357ABD;
+        }
+    </style>
+</head>
+<body>
+    {% include 'navbar.html' %}
+
+    <div class="profile-container">
+        <div class="profile-header">
+            <form method="POST" enctype="multipart/form-data" class="ml-80">
+                {% csrf_token %}
+                
+                <img src="{{ user.photo }}" alt="Profile Picture" id="profile-pic" onclick="document.getElementById('upload-pic').click();" style="cursor: pointer;">
+                
+                <input type="file" id="upload-pic" name="profile_picture" accept="image/*" onchange="previewImage(event);">
+                
+                <button type="submit" id="change-button" style="display: none;">Changer</button>
+            </form>
+            <h1>{{ user.username }}</h1>
+            <p>Email: {{ user.email }}</p>
+            <p>Abonnement: {{ user.abonnement }}</p>
+            <p>Member since: {{ user.date_joined|date:"F j, Y" }}</p>
+        </div>
+
+        <div class="profile-content">
+            <div class="profile-section">
+                <h2>Personal Information</h2>
+                <p>Full Name: {{ user.username }}</p>
+                <p>photo: {{ user.photo }}</p>
+
+                <p>Last Login: {{ user.last_login|date:"F j, Y, g:i a" }}</p>
+            </div>
+            <div class="profile-section">
+                <h2>Account Settings</h2>
+                <p><a href="" class="edit-button">Edit Profile</a></p>
+            </div>
+        </div>
+    </div>
+
+</body>
+<script>
+    function previewImage(event) {
+        const file = event.target.files[0];
+        const reader = new FileReader();
+        
+        reader.onload = function(e) {
+            const img = document.getElementById('profile-pic');
+            img.src = e.target.result;  // Met à jour l'image affichée avec la nouvelle photo
+            document.getElementById('change-button').style.display = 'inline';  // Affiche le bouton "Changer"
+        }
+        
+        if (file) {
+            reader.readAsDataURL(file);  // Lit le fichier et déclenche onload
+        }
+    }
+</script>
+</html>

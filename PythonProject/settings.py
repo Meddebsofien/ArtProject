@@ -18,7 +18,7 @@ env = environ.Env()
 environ.Env.read_env()  # Lire le fichier .env
 
 # Maintenant, vous pouvez accéder à la clé API comme suit
-HUGGINGFACE_API_TOKEN = env("HUGGINGFACE_API_TOKEN")
+HUGGINGFACE_API_TOKEN = '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'
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -44,11 +44,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'admin_dashboard',
     'MyApp',
     'colorpic',
     'compressor',
     'textetoimage',
     'user',
+    'reclamation',
 ]
 
 MIDDLEWARE = [

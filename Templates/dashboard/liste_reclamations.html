@@ -1,0 +1,75 @@
+<!-- templates/admin_dashboard/liste_reclamations.html -->
+{% load static %}
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<div class="flex">
+    <div class="w-1/4 bg-gray-800 text-white h-screen p-5">
+        <h2 class="text-xl font-bold mb-5">Admin Dashboard</h2>
+        <ul>
+            <li><a href="{% url 'dashboard' %}" class="block py-2 hover:bg-gray-700">Dashboard</a></li>
+            <li><a href="{% url 'liste_reclamations' %}" class="block py-2 hover:bg-gray-700">Reclamations</a></li>
+        </ul>
+    </div>
+
+    <div class="flex-grow p-5">
+        <h1 class="text-2xl font-bold mb-5">Liste des Réclamations</h1>
+        <table class="min-w-full bg-white border border-gray-300">
+            <thead>
+                <tr>
+                    <th class="py-2 border">Titre</th>
+                    <th class="py-2 border">Description</th>
+                    <th class="py-2 border">Statut</th>
+                    <th class="py-2 border">Date de création</th>
+                    <th class="py-2 border">Action</th> <!-- Colonne pour le bouton Répondre -->
+                </tr>
+            </thead>
+            <tbody>
+                {% for reclamation in reclamations %}
+                <tr>
+                    <td class="border px-4 py-2">{{ reclamation.titre }}</td>
+                    <td class="border px-4 py-2">{{ reclamation.description }}</td>
+                    <td class="border px-4 py-2">{{ reclamation.statut }}</td>
+                    <td class="border px-4 py-2">{{ reclamation.date_creation }}</td>
+                    <td class="border px-4 py-2">
+                        <button class="text-blue-500" onclick="openModal('{{ reclamation.id }}')">Répondre</button>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center">Aucune réclamation trouvée.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Modale de réponse -->
+<div id="responseModal" class="fixed inset-0 flex items-center justify-center z-50 hidden">
+    <div class="bg-white p-5 rounded shadow-lg">
+        <h2 class="text-lg font-bold mb-4">Répondre à la réclamation</h2>
+        <form id="responseForm" method="post" action="{% url 'repondre_reclamation' 0 %}"> <!-- Remplacez 0 par l'ID de la réclamation -->
+            {% csrf_token %}
+            <textarea name="reponse" rows="4" class="border w-full p-2" placeholder="Votre réponse..."></textarea>
+            <input type="hidden" name="reclamation_id" id="reclamationId" value="">
+            <div class="flex justify-end mt-4">
+                <button type="button" onclick="closeModal()" class="mr-2 text-gray-500">Annuler</button>
+                <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Envoyer</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function openModal(reclamationId) {
+    document.getElementById('reclamationId').value = reclamationId; // Set the reclamation ID
+    document.getElementById('responseModal').classList.remove('hidden');
+    // Update form action dynamically
+    document.getElementById('responseForm').action = "{% url 'repondre_reclamation' 0 %}".replace('0', reclamationId);
+}
+
+function closeModal() {
+    document.getElementById('responseModal').classList.add('hidden');
+}
+</script>

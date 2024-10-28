@@ -14,15 +14,15 @@ from pathlib import Path
 import environ
 import os
 # Initialise django-environ
-env = environ.Env()
-environ.Env.read_env()  # Lire le fichier .env
+# env = environ.Env()
+# environ.Env.read_env()  # Lire le fichier .env
 
 # Maintenant, vous pouvez accéder à la clé API comme suit
-HUGGINGFACE_API_TOKEN = env("HUGGINGFACE_API_TOKEN")
+HUGGINGFACE_API_TOKEN ='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'
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
+LOGIN_URL = '/login/'  # Remplacez cela par l'URL de votre page de connexion
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
@@ -33,6 +33,7 @@ SECRET_KEY = 'django-insecure-%9ajl#jq+mxtdzr0fau$wg8yyw74^cx=4%k-mecbevg@s)1unn
 DEBUG = True
 
 ALLOWED_HOSTS = []
+AUTH_USER_MODEL = 'user.CustomUser'  # Replace with your actual user model path if different
 
 
 # Application definition
@@ -49,6 +50,7 @@ INSTALLED_APPS = [
     'compressor',
     'textetoimage',
     'user',
+    
 ]
 
 MIDDLEWARE = [

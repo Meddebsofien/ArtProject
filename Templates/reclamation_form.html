@@ -1,0 +1,196 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reclamation Form - AI Project</title>
+    <link rel="stylesheet" href="{% static 'src/style.css' %}">
+    <style>
+        /* Styles pour l'arrière-plan */
+        .bg-ai {
+            background-image: url("{% static 'images/background.jpg' %}");
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff; /* Couleur du texte par défaut */
+        }
+
+        /* Effet de verre givré */
+        .glass-effect {
+            background: rgba(0, 0, 0, 0.5); /* Fond plus sombre pour améliorer le contraste */
+            backdrop-filter: blur(15px) contrast(1.2);
+            padding: 30px;
+            border-radius: 15px;
+            width: 100%;
+            max-width: 500px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Styles de formulaire */
+        .txt_field {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .txt_field input,
+        .txt_field select,
+        .txt_field textarea {
+            width: 100%;
+            padding: 10px;
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid #fff;
+            color: #fff; /* Couleur du texte */
+            font-size: 16px;
+            outline: none;
+        }
+
+        .txt_field label {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            color: #fff;
+            pointer-events: none;
+            transform: translateY(-50%);
+            transition: 0.5s;
+        }
+
+        .txt_field input:focus ~ label,
+        .txt_field input:valid ~ label,
+        .txt_field textarea:focus ~ label,
+        .txt_field select:focus ~ label {
+            top: -20px;
+            color: #03a9f4;
+            font-size: 12px;
+        }
+
+        .txt_field span::before {
+            content: '';
+            position: absolute;
+            top: 40px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: #03a9f4;
+            transition: 0.5s;
+            opacity: 0;
+        }
+
+        .txt_field input:focus ~ span::before,
+        .txt_field textarea:focus ~ span::before,
+        .txt_field select:focus ~ span::before {
+            opacity: 1;
+        }
+
+        input[type="submit"], .btn-cancel {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            background: #03a9f4;
+            font-size: 18px;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        input[type="submit"]:hover, .btn-cancel:hover {
+            background: #0288d1;
+        }
+
+        .btn-cancel {
+            background: #f44336; /* Rouge pour le bouton d'annulation */
+            margin-top: 10px;
+        }
+
+        .btn-cancel:hover {
+            background: #d32f2f; /* Rouge plus foncé au survol */
+        }
+
+        .signup_link {
+            text-align: center;
+            margin-top: 20px;
+            color: #fff;
+        }
+
+        .signup_link a {
+            color: #03a9f4;
+            text-decoration: none;
+        }
+
+        .signup_link a:hover {
+            text-decoration: underline;
+        }
+
+        /* Notification style */
+        .notification {
+            color: green;
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+
+        .error {
+            color: red;
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+
+<body class="bg-ai">
+    <div class="glass-effect">
+        <h2 class="text-4xl font-bold text-center mb-6">Reclamation Form</h2>
+        
+        {% if messages %}
+            {% for message in messages %}
+                <div class="notification">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <form method="POST">
+            {% csrf_token %}
+            <div class="txt_field">
+                <label for="username"></label>
+                <input type="text" name="username" id="username" value="username : {{ user.username }}" readonly>
+            </div>
+            
+            <div class="txt_field">
+                <label for=""></label>
+                <textarea name="description" id="description" required></textarea>
+            </div>
+        
+            <div class="txt_field">
+                <label for="status"></label>
+                <select name="status" id="status" required >
+                    <option value="en_attente">En attente</option>
+                    <option value="en_cours">En cours</option>
+                    <option value="resolu">Résolu</option>
+                </select>
+            </div>
+        
+            <div class="txt_field">
+                <label for=""></label>
+                <select name="service" id="service" required>
+                    <option value="generate_image">Generate Image from Text</option>
+                    <option value="colorize_image">Colorize Image</option>
+                    <option value="autres">Autres</option>
+                </select>
+            </div>
+        
+            <button type="submit" class="btn-cancel">Créer Réclamation</button>
+            <button type="button" class="btn-cancel" onclick="window.location.href='{% url 'reclamation_list' %}'">Annuler</button>
+        </form>
+
+        <div class="signup_link">
+            <a href="{% url 'reclamation_list' %}">View Your Reclamations</a>
+        </div>
+    </div>
+</body>
+</html>

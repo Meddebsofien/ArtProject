@@ -1,0 +1,124 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reclamation List - AI Project</title>
+    <link rel="stylesheet" href="{% static 'src/style.css' %}">
+    <style>
+        /* Styles pour l'arrière-plan */
+        .bg-ai {
+            background-image: url("{% static 'images/background.jpg' %}");
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Effet de verre givré */
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(15px) contrast(1.2);
+            padding: 30px;
+            border-radius: 15px;
+            width: 100%;
+            max-width: 600px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            overflow: auto;
+            max-height: 80vh; /* Pour permettre le défilement si nécessaire */
+        }
+
+        h2 {
+            color: #fff;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        /* Styles de la liste des réclamations */
+        .reclamation-item {
+            background: rgba(255, 255, 255, 0.1);
+            margin-bottom: 15px;
+            padding: 15px;
+            border-radius: 10px;
+            transition: background 0.3s;
+        }
+
+        .reclamation-item:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .reclamation-status {
+            font-size: 18px;
+            color: #03a9f4;
+        }
+
+        .reclamation-description {
+            font-size: 16px;
+            color: #fff;
+        }
+
+        .action-links {
+            margin-top: 10px;
+            text-align: right;
+        }
+
+        .action-links a {
+            color: #03a9f4;
+            text-decoration: none;
+            margin-left: 15px;
+        }
+
+        .action-links a:hover {
+            text-decoration: underline;
+        }
+
+        /* Style du bouton d'ajout de réclamation */
+        .add-reclamation-button {
+            display: block;
+            margin: 20px auto;
+            padding: 10px 20px;
+            background: #03a9f4;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            font-size: 18px;
+            text-align: center;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .add-reclamation-button:hover {
+            background: #0288d1;
+        }
+    </style>
+</head>
+<body class="bg-ai">
+    <div class="glass-effect">
+        <h2>Reclamation List</h2>
+
+        {% if reclamations %}
+            {% for reclamation in reclamations %}
+                <div class="reclamation-item">
+                    <div class="reclamation-status" style="color:red" >Status: {{ reclamation.get_status_display }}</div>
+                    <div class="reclamation-description">{{ reclamation.description }}</div>
+                    <div class="action-links">
+                        <a href="{% url 'reclamation_update' reclamation.id %}">Edit</a>
+                        <a href="{% url 'reclamation_delete' reclamation.id %}">Delete</a>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p style="color: #fff; text-align: center;">No reclamations available.</p>
+        {% endif %}
+
+        <div class="text-center">
+            <a href="{% url 'reclamation_create' %}" class="add-reclamation-button">Add Reclamation</a>
+            <button onclick="window.location.href='{% url 'home' %}'" class="add-reclamation-button">Back to Home</button>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,25 @@
+<!-- templates/admin_dashboard/dashboard.html -->
+{% load static %}
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+
+<div class="flex">
+    <!-- Sidebar -->
+    <div class="w-1/4 bg-gray-800 text-white h-screen p-5">
+        <h2 class="text-xl font-bold mb-5">Admin Dashboard</h2>
+        <ul>
+            <li><a href="{% url 'dashboard' %}" class="block py-2 hover:bg-gray-700">Dashboard</a></li>
+            <li><a href="{% url 'liste_reclamationsadmin' %}" class="block py-2 hover:bg-gray-700">Reclamations</a></li>
+            <li><a href="" class="block py-2 hover:bg-gray-700">Users</a></li>
+            <li><a href=""" class="block py-2 hover:bg-gray-700">Reponse</a></li>
+            <li><a href="{% url 'liste_reclamationsadmin' %}" class="block py-2 hover:bg-gray-700">Reclamations</a></li>
+
+
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="flex-grow p-5">
+        <h1 class="text-2xl font-bold mb-5">Welcome to the Admin Dashboard</h1>
+        <!-- Ajoutez du contenu ici -->
+    </div>
+</div>

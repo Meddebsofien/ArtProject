@@ -49,11 +49,13 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.humanize',
     'django.contrib.staticfiles',
+    'admin_dashboard',
     'MyApp',
     'colorpic',
     'compressor',
     'textetoimage',
     'user',
+    'reclamation',
     'publications',
    
 ]

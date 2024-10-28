@@ -12,17 +12,21 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 
 from pathlib import Path
 import environ
+from dotenv import load_dotenv
 import os
+dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
+load_dotenv(dotenv_path)
 # Initialise django-environ
-# env = environ.Env()
-# environ.Env.read_env()  # Lire le fichier .env
+env = environ.Env()
+environ.Env.read_env()  # Lire le fichier .env
+GOOGLE_API_KEY='AIzaSyA44yvXfrO788vxbfnSk2R2sdyRj1m8jGA'
 
 # Maintenant, vous pouvez accéder à la clé API comme suit
-HUGGINGFACE_API_TOKEN ='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'
+HUGGINGFACE_API_TOKEN = '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'
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-LOGIN_URL = '/login/'  # Remplacez cela par l'URL de votre page de connexion
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
@@ -33,7 +37,6 @@ SECRET_KEY = 'django-insecure-%9ajl#jq+mxtdzr0fau$wg8yyw74^cx=4%k-mecbevg@s)1unn
 DEBUG = True
 
 ALLOWED_HOSTS = []
-AUTH_USER_MODEL = 'user.CustomUser'  # Replace with your actual user model path if different
 
 
 # Application definition
@@ -44,18 +47,24 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    'django.contrib.humanize',
     'django.contrib.staticfiles',
+    'admin_dashboard',
     'MyApp',
     'colorpic',
     'compressor',
     'textetoimage',
     'user',
-    
+    'reclamation',
+    'publications',
+   
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',  # Add this line
+
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',

@@ -1,0 +1,62 @@
+
+
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Publication</title>
+    <link rel="stylesheet" href="{% static 'src/output.css' %}">
+</head>
+<body class="bg-gray-900 ">
+    {% include 'navbar.html' %}
+    <div class="container mx-auto mb-3 p-8">
+        <div class="mx-auto bg-white rounded-lg shadow-md p-8">
+            <form action="" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="mb-4">
+                    <label for="titre" class="block text-sm font-medium text-gray-700">Title</label>
+                    <input type="text" required name="titre" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200" placeholder="Enter the title">
+                </div>
+                <div class="mb-4">
+                    <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
+                    <textarea required id="description" name="description" rows="5" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200" placeholder="Enter the description"></textarea>
+                    <button type="button" class="mx-2 btn btn-secondary" id="generatedescription">Generate Description</button>
+                    <script>
+                        document.getElementById('generatedescription').addEventListener('click', function() {
+                            const title = document.querySelector('[name="titre"]').value; // Use querySelector for a more generic approach
+                            fetch('{% url "generate_description" %}', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRFToken': '{{ csrf_token }}'
+                                },
+                                body: JSON.stringify({ titre: title })
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.description) {
+                                    document.getElementById('description').value = data.description;
+                                } else {
+                                    console.error('No description returned:', data);
+                                }
+                            })
+                            .catch(error => console.error('Error:', error));
+                        });
+                    </script>
+                </div>
+                
+                
+                <div class="mb-4">
+                    <label for="image" class="block text-sm font-medium text-gray-700">Image</label>
+                    <input type="file" required name="image" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200">
+                </div>
+                
+                <button type="submit" class="w-full bg-blue-600 text-white font-semibold py-2 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">Create</button>
+            </form>
+        </div>    
+    </div>
+</body>
+</html>

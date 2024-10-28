@@ -1,0 +1,144 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feedback Form - AI Project</title>
+    <link rel="stylesheet" href="{% static 'src/style.css' %}">
+    <style>
+        /* Styles pour l'arrière-plan */
+        .bg-ai {
+            background-image: url("{% static 'images/background.jpg' %}");
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Effet de verre givré */
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(15px) contrast(1.2);
+            padding: 30px;
+            border-radius: 15px;
+            width: 100%;
+            max-width: 500px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Styles de formulaire */
+        .txt_field {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .txt_field input, .txt_field textarea {
+            width: 100%;
+            padding: 10px;
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid #fff;
+            color: white;
+            font-size: 16px;
+            outline: none;
+        }
+
+        .txt_field label {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            color: #fff;
+            pointer-events: none;
+            transform: translateY(-50%);
+            transition: 0.5s;
+        }
+
+        .txt_field input:focus ~ label,
+        .txt_field input:valid ~ label,
+        .txt_field textarea:focus ~ label {
+            top: -20px;
+            color: #03a9f4;
+            font-size: 12px;
+        }
+
+        input[type="submit"] {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            background: #03a9f4;
+            font-size: 18px;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        input[type="submit"]:hover {
+            background: #0288d1;
+        }
+
+        /* Notification style */
+        .notification {
+            color: green;
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+
+        /* Button style for the home link */
+        .home-button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background: #03a9f4;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: 0.3s;
+        }
+
+        .home-button:hover {
+            background: #0288d1;
+        }
+    </style>
+</head>
+<body class="bg-ai">
+    <div class="glass-effect">
+        <h2 class="text-4xl font-bold text-white text-center mb-6">Feedback Form</h2>
+        
+        {% if messages %}
+            {% for message in messages %}
+                <div class="notification">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <form method="POST">
+            {% csrf_token %}
+            <div class="txt_field">
+                <input type="text" required name="username" value="Username : {{ request.user.username }}" readonly>
+                <span></span>
+                <label></label>
+            </div>
+            <div class="txt_field">
+                <textarea required name="comment" placeholder="Enter your feedback here...">{{ form.comment.value }}</textarea>
+                <span></span>
+                <label></label>
+            </div>
+            <input type="submit" value="Submit Feedback">
+        </form>
+
+        <div class="signup_link">
+            <a href="{% url 'feedback_list' %}">View Your Feedback</a>
+        </div>
+        
+        <!-- Button to return to home -->
+        <button onclick="window.location.href='{% url 'home' %}'" class="home-button">Back to Home</button>
+    </div>
+</body>
+</html>

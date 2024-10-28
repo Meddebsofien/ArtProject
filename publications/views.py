@@ -1,0 +1,206 @@
+import json
+import os
+from dotenv import load_dotenv
+load_dotenv()
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404, render, redirect
+from PythonProject import settings
+from .models import Commentaire, Publication
+from django.contrib import messages
+from django.core.paginator import Paginator
+import google.generativeai as genai
+import requests
+from PIL import Image
+
+import streamlit as st
+from django.contrib.auth.decorators import login_required
+
+GOOGLE_API_KEY='AIzaSyA44yvXfrO788vxbfnSk2R2sdyRj1m8jGA'
+genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
+
+
+@login_required
+def publication(request):
+    list_publications=Publication.objects.all()
+    print(list_publications)
+    context = {"list_publications": list_publications}  
+    return render(request, "publication.html", context)
+@login_required 
+def publication_create(request):
+    if request.method == 'POST':
+        pub=Publication()
+        pub.titre = request.POST.get('titre')
+        pub.description = request.POST.get('description')
+        pub.user = request.user 
+        if 'image' in request.FILES:  
+            pub.image = request.FILES['image']  
+        pub.save()
+        messages.success(request , 'created successfully')
+        return redirect('/publications')
+         
+    return render(request, 'publication_create.html')
+def publication_update(request, pk):
+    publication = get_object_or_404(Publication, pk=pk)
+    if request.user != publication.user and not request.user.is_staff:
+        messages.error(request, 'You do not have permission to edit this publication.')
+        return redirect('/publications')  # Red
+    if request.method == 'POST':
+        publication.titre = request.POST.get('titre')
+        publication.description = request.POST.get('description')
+        
+        if 'image' in request.FILES:
+            publication.image = request.FILES['image']
+        
+        publication.save()
+        
+        messages.success(request, 'Publication updated successfully')
+        return redirect('/publications')  
+    
+    return render(request, 'publication_update.html', {'publication': publication})
+def publication_details(request, pk):
+    publication = get_object_or_404(Publication, pk=pk)
+    commentaires = publication.commentaires.all()  
+    
+    paginator = Paginator(commentaires, 6)  
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, 'publication_details.html', {
+        'publication': publication,
+        'image_url': publication.image.url , # Image path to pass to Streamlit
+
+        'page_obj': page_obj  
+    })
+
+def publication_delete(request, pk):
+    publication = get_object_or_404(Publication, pk=pk)
+
+    if request.user != publication.user and not request.user.is_staff:
+        messages.error(request, 'You do not have permission to edit this publication.')
+        return redirect('/publications')  # Red
+    publication = Publication.objects.filter(id=pk)
+    publication.delete()
+    messages.success(request , "Post deleted Successefully")
+    return redirect('/publications') 
+@login_required 
+def publication_comment(request, pk):
+    publication = get_object_or_404(Publication, id=pk)
+    
+    if request.method == 'POST':
+        contenu = request.POST.get('contenu')
+       
+        commentaire = Commentaire(publication=publication, contenu=contenu )
+        commentaire.user = request.user
+        commentaire.save()
+      
+
+        messages.success(request, 'Commentaire ajouté avec succès!')
+    commentaires = publication.commentaires.all()  # Ensure this fetches the related comments
+    
+    paginator = Paginator(commentaires, 6)  
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, 'publication_details.html', {
+        'publication': publication,
+        'page_obj': page_obj  
+    })
+    
+def commentaire_delete(request, pk):
+    commentaire = get_object_or_404(Commentaire, pk=pk)
+    
+    
+    commentaire.delete()
+    return redirect('publication_details', pk=commentaire.publication.id)  
+@login_required
+
+def commentaire_update(request, pk):
+    commentaire = get_object_or_404(Commentaire, pk=pk)
+    
+    if request.method == 'POST':
+        commentaire.contenu = request.POST.get('contenu')
+        
+        commentaire.save()
+        
+        messages.success(request, 'Comment updated successfully')
+        return redirect('publication_details', pk=commentaire.publication.pk)  
+    
+    return render(request, 'commentaire_update.html', {'commentaire': commentaire})
+
+
+
+
+
+
+
+
+def ai_generate_description(titre):
+    model = genai.GenerativeModel('gemini-1.5-flash')
+    prompt = f"Generer un description pour ce titre d'une oeuvre d'art: {titre}"
+    
+    response = model.generate_content(prompt)
+    return response.text
+
+def generate_description(request):
+    if request.method == "POST":
+        data = json.loads(request.body)
+        titre = data.get('titre', '')
+        description = ai_generate_description(titre)
+
+        print(f'Title: {titre}, Generated Description: {description}')  
+
+        if description:
+            return JsonResponse({'description': description})
+        else:
+            return JsonResponse({'error': 'Failed to generate description'}, status=500)
+
+    return JsonResponse({'error': 'Invalid request'}, status=400)
+
+
+
+model = genai.GenerativeModel("gemini-1.5-flash")  
+
+def get_gemini_response(input, image):
+    if input != "":
+        response = model.generate_content([input, image])
+    else:
+        response = model.generate_content(image)
+    return response.text
+
+st.set_page_config(page_title="Image Evaluation")
+
+st.header("Image Evaluation")
+input = st.text_input("Input:", key="input")
+image = ""
+
+submit = st.button("Rate damage of the image out of 100")
+
+if submit:
+    response = get_gemini_response(input, image)
+    st.subheader("The response is")
+    st.write(response)
+
+def evaluate_damage(publication_image, user_input):
+    image = Image.open(publication_image)
+    user_input = "Rate the damage of the image out of 100 without other words, only with this format ../100 "
+    response = model.generate_content([user_input, image])
+    
+    return response.text  
+@login_required
+def evaluate_damage_view(request, pk):
+    publication = get_object_or_404(Publication, pk=pk)
+    damage_score = None  # Initialize damage_score
+    show_damage_score = False 
+
+    if request.method == 'POST':
+        if publication.image:
+            damage_score = evaluate_damage(publication.image, user_input="Rate the damage of the image out of 100 . without other words, only with this format ../100")
+            messages.success(request, f'Damage score: {damage_score}')
+            show_damage_score = True  
+        else:
+            messages.error(request, 'No image found for this publication.')
+
+    return render(request, 'publication_details.html', {
+        'publication': publication,
+        'damage_score': damage_score
+    })

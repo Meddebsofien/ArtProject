@@ -61,6 +61,8 @@
                                 <p>Crée par : {{commentaire.user.username}}</p>
                             </div>
                             <div class="flex items-center">
+                                {% if request.user == publication.user or request.user.is_staff %}
+
                                 <a href="{% url 'commentaire_update' commentaire.id %}" title="Modifier">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-blue-600 hover:text-blue-800" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 4h4v4m-4 0l-8 8-4 4v-4l4-4 8-8zm0 0l4 4-4-4z" />
@@ -71,6 +73,8 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6h18M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2m-6 0h6M4 6v14a2 2 0 002 2h12a2 2 0 002-2V6M6 6v14m6-14v14m6-14v14" />
                                     </svg>
                                 </a>
+                                {% endif %}
+
                             </div>
                         </div>
                     {% empty %}
@@ -95,7 +99,7 @@
 
                 <!-- Boutons de mise à jour et suppression -->
                 <div class="flex justify-between p-4">
-                    {% if request.user == publication.user %}
+                    {% if request.user == publication.user or request.user.is_staff %}
                     <a href="{% url 'publication_update' publication.id %}" class="px-4 py-2 text-white bg-blue-600 rounded hover:bg-blue-700">
                         Edit
                     </a>

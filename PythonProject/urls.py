@@ -24,7 +24,7 @@ urlpatterns = [
     path('colorpic/', include('colorpic.urls')),
     path('textetoimage/', include('textetoimage.urls')),
     
-
+path('forum/', include('forum.urls')),  # Inclure les routes de forum
     path('publications/', include('publications.urls')),  # Inclure les routes de publications
     
 ]

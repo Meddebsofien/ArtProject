@@ -1,0 +1,93 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Forum</title>
+    <link rel="stylesheet" href="{% static 'src/output.css' %}">
+    <style>
+        /* Ajoutez ici vos styles personnalisés */
+        .hero-section {
+            background-image: url("{% static 'images/background.jpg' %}");
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            padding: 50px 0;
+        }
+
+        .forum-card {
+            background-color: #1f1f1f;
+            border-radius: 10px;
+            padding: 2rem;
+            transition: transform 0.3s, background-color 0.3s;
+        }
+
+        .forum-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .card-title {
+            color: #ffffff;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .card-description {
+            color: #ffffff;
+            font-size: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .create-button {
+            display: inline-block;
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            transition: background-color 0.3s;
+            margin: 20px 0;
+        }
+
+        .create-button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white">
+
+    <!-- Inclure la barre de navigation -->
+    {% include 'navbar.html' %}
+
+    <!-- Section Hero -->
+    <section class="hero-section text-center">
+        <h1 class="text-5xl font-bold mb-4">Welcome to the Forum</h1>
+        <p class="text-xl mb-8">Join discussions and share your thoughts!</p>
+        <a href="{% url 'create-forum' %}" class="create-button">Create New Forum</a>
+    </section>
+
+    <!-- Section des cartes des forums -->
+    <section class="card-container py-10">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-7xl mx-auto">
+            {% for forum in forums %}
+            <div class="forum-card p-6">
+                <h3 class="card-title">{{ forum.title }}</h3>
+                <p class="card-description">{{ forum.description }}</p>
+                <p class="text-gray-400">Created at: {{ forum.created_at|date:"F j, Y" }}</p>
+                <p>Created by: {{ forum.owner.username }}</p>
+                
+                
+            </div>
+           
+            {% endfor %}
+        </div>
+    </section>
+
+    <script>
+        // Vous pouvez ajouter des scripts ici si nécessaire
+    </script>
+</body>
+</html>

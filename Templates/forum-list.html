@@ -78,7 +78,12 @@
                 <p class="card-description">{{ forum.description }}</p>
                 <p class="text-gray-400">Created at: {{ forum.created_at|date:"F j, Y" }}</p>
                 <p>Created by: {{ forum.owner.username }}</p>
-                
+                <div class="mt-4">
+                    <a href="{% url 'forum-update' forum.id %}" class="bg-blue-500 text-white font-semibold py-2 px-4 rounded hover:bg-blue-600">Update</a>
+                   
+                 
+                  
+                </div>
                 
             </div>
            

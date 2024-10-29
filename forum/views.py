@@ -37,7 +37,7 @@ class UpdateForumView(UpdateView):
     context_object_name = 'post'
 
     def form_valid(self, form):
-        messages.success(self.request, "Forum updated successfully!")  # Message de succès
+       
         return super().form_valid(form)
 
     def get_success_url(self):

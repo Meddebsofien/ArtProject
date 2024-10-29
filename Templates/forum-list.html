@@ -81,7 +81,11 @@
                 <div class="mt-4">
                     <a href="{% url 'forum-update' forum.id %}" class="bg-blue-500 text-white font-semibold py-2 px-4 rounded hover:bg-blue-600">Update</a>
                    
-                 
+                    <form action="{% url 'forum-delete' forum.id %}" method="post" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="text-red-600 hover:text-red-800">Delete</button>
+                    </form>
+                    
                   
                 </div>
                 

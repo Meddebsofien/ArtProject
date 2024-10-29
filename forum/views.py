@@ -1,7 +1,7 @@
 from django.shortcuts import render
 import logging
 logger = logging.getLogger(__name__)
-from django.views.generic import ListView, CreateView, UpdateView
+from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
 from .models import Forum
 from .forms import ForumForm
@@ -42,3 +42,10 @@ class UpdateForumView(UpdateView):
 
     def get_success_url(self):
         return reverse_lazy('forum-list')
+
+class DeleteForumView(DeleteView):
+    model = Forum
+    success_url = reverse_lazy('forum-list')  # Redirige vers la liste des forums après suppression
+
+    def delete(self, request, *args, **kwargs):
+        return super().delete(request, *args, **kwargs) 
